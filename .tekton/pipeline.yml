@@ -1,0 +1,49 @@
+
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: oc-pipelines-oc-final
+spec:
+  description: CI pipeline for the Coursera Python application.
+  workspaces:
+    - name: shared-workspace
+  params:
+    - name: git-url
+      type: string
+      description: GitHub repository URL
+    - name: git-revision
+      type: string
+      default: main
+      description: Git branch
+  tasks:
+    - name: fetch-source
+      taskRef:
+        name: git-clone
+      params:
+        - name: url
+          value: $(params.git-url)
+        - name: revision
+          value: $(params.git-revision)
+        - name: deleteExisting
+          value: "true"
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+
+    - name: run-nose-tests
+      runAfter:
+        - fetch-source
+      taskRef:
+        name: nose
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+
+    - name: cleanup
+      runAfter:
+        - run-nose-tests
+      taskRef:
+        name: cleanup
+      workspaces:
+        - name: source
+          workspace: shared-workspace
