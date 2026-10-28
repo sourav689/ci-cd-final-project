@@ -1,12 +1,6 @@
 
-
-\# # ci-cd-final-project
-
-
-
 \## Project Name
-
-Coursera CI/CD Final Project
+\# # ci-cd-final-project
 
 
 
